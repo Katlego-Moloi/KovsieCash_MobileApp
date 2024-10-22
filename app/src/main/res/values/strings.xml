@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">KovsieCash</string>
+
+    <string-array name="role_options">
+        <item>Customer</item>
+        <item>Consultant</item>
+        <item>Advisor</item>
+        <item>Admin</item>
+    </string-array>
+
+</resources>
