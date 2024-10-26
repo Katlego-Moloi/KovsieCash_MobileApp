@@ -4,8 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="corporate_blue">#0F204B</color>
     <color name="corporate_blue_50">#800F204B</color>
+    <color name="light_blue">#90D5FF</color>
     <color name="corporate_red">#A71930</color>
+    <color name="light_red">#FAA0A0</color>
     <color name="cool_grey">#A7A8AA</color>
     <color name="cool_grey_dark">#8B8D8E</color>
+
 
 </resources>

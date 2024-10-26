@@ -1,0 +1,10 @@
+Admin,admin@kovsiecash.ac.za,Admin@2024,Admin
+ThaboM,thabo.gamer@tmail.com,Th@bo2024,Customer
+SiphoM,sipho.theboss@yahoo.com,Password123!,Customer
+NandiK,nandi.koolkat@gmail.com,Secure@2023,Customer
+BonganiS,bongani_sithole24@hotmail.com,StrongPassword456,Customer
+PalesaR,palesa.queen@outlook.com,MyPassword!789,Customer
+KaraboM,karabo.mashaba@protonmail.com,WelcomePass123!,Advisor
+FikileK,fikile.khumalo@gmail.com,Secure1234!,Advisor
+SimphiweD,simphiwe.dube@hotmail.com,SecurePass2023*,Consultant
+SelloM,sello.gamer@tutanota.com,Password123@!,Consultant

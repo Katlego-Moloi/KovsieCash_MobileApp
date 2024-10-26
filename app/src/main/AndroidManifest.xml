@@ -24,10 +24,50 @@
         </activity>
 
         <activity
+            android:name=".LoginActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.LoginActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".MainActivity"
             android:exported="true" >
             <intent-filter>
                 <action android:name="moloi.tk.kovsiecash.MainActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.RegisterActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".AccountActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.AccountActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".MoreActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.MoreActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

@@ -18,9 +18,9 @@ public class SplashActivity extends AppCompatActivity {
             public void run()
             {
                 startActivity(new
-                        Intent("moloi.tk.kovsiecash.MainActivity"));
+                        Intent("moloi.tk.kovsiecash.LoginActivity"));
                 finish();
             }
-        }, 6000);
+        }, 3000);
     }
 }
