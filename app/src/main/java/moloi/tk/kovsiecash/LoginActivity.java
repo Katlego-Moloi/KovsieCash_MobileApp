@@ -2,6 +2,9 @@ package moloi.tk.kovsiecash;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,6 +21,8 @@ import java.io.IOException;
 public class LoginActivity extends AppCompatActivity {
     // Declare Variables
     private DBAdapter dbAdapter;
+
+    EditText edtPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         // Declare and Instantiate components
         Button btnLogin = findViewById(R.id.btnLogin);
         EditText edtEmail = findViewById(R.id.edtEmail);
-        EditText edtPassword = findViewById(R.id.edtPassword);
+        edtPassword = findViewById(R.id.edtPassword);
         TextView txtRegister = findViewById(R.id.txtRegisterAccount);
 
         txtRegister.setOnClickListener(v -> {
@@ -74,6 +79,31 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        edtPassword.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_RIGHT = 2;
+
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (edtPassword.getRight() - edtPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                    // Your action here
+                    togglePasswordVisibility();
+                    return true;
+                }
+            }
+            return false;
+        });
+    }
+
+    private void togglePasswordVisibility() {
+        if (edtPassword.getTransformationMethod() instanceof PasswordTransformationMethod) {
+            edtPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance()); // Show password
+            edtPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_hidden, 0); // Change drawable if needed
+        } else {
+            edtPassword.setTransformationMethod(PasswordTransformationMethod.getInstance()); // Hide password
+            edtPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_password_visible, 0); // Change drawable if needed
+        }
+
+        // Move cursor to the end
+        edtPassword.setSelection(edtPassword.getText().length());
     }
 
     @Override

@@ -186,6 +186,8 @@ public class DBAdapter {
         }
     }
 
+
+
     public int getUserId(String email) {
         int userId = -1; // Default value if not found
 
@@ -223,6 +225,8 @@ public class DBAdapter {
         // 5. Return the username (or null if not found)
         return userName;
     }
+
+
 
     public ArrayList<Transaction> getRecentTransactions(int userId, int transactionCount) {
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -341,7 +345,7 @@ public class DBAdapter {
     }
 
     // Insert a user into the database
-    private long insertUser(String username, String email, String password, String role) {
+    public long insertUser(String username, String email, String password, String role) {
         ContentValues values = new ContentValues();
         values.put("UserName", username);
         values.put("Email", email);
@@ -459,7 +463,7 @@ public class DBAdapter {
     }
 
     // Insert a notification
-    private void insertNotification(int userId, String description, String notiDate, String type) {
+    public void insertNotification(int userId, String description, String notiDate, String type) {
         ContentValues values = new ContentValues();
         values.put("UserID", userId);
         values.put("NotificationDescription", description);

@@ -9,15 +9,6 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/white_circle"
-        android:layout_alignTop="@+id/navigationBar"
-        android:layout_marginTop="-20dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_transact"/>
-
     <LinearLayout
         android:id="@+id/main_header"
         android:layout_alignParentTop="true"
@@ -115,11 +106,12 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current Balance"/>
+                android:text="Debit this Month"/>
 
             <TextView
                 android:layout_marginLeft="15dp"
@@ -150,11 +142,12 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Current Balance"/>
+                android:text="Credit this Month"/>
 
             <TextView
                 android:layout_marginLeft="15dp"
@@ -201,71 +194,93 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/navigationBar"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:background="@drawable/white_circle"
         android:backgroundTint="@color/corporate_blue"
-        android:layout_marginBottom="10dp"
-        android:layout_marginHorizontal="8dp"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="25dp">
+        android:paddingHorizontal="25dp"
+        android:layout_marginBottom="10dp">
 
         <ImageButton
+            android:id="@+id/btnDashboard"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_dashboard"
             android:background="@null"
-            android:scaleType="fitCenter"/>
+            android:foregroundTint="@color/light_blue"
+            android:scaleType="fitCenter"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/btnAccounts"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+        <View
+            android:layout_marginTop="3dp"
+            android:layout_width="40dp"
+            android:layout_height="2dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/btnDashboard"/>
 
         <ImageButton
+            android:id="@+id/btnAccounts"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_accounts"
             android:background="@null"
-            android:scaleType="fitCenter"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:scaleType="fitCenter"
+            app:layout_constraintLeft_toRightOf="@id/btnDashboard"
+            app:layout_constraintRight_toLeftOf="@id/view"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <View
+            android:id="@+id/view"
             android:layout_width="40dp"
-            android:layout_height="40dp"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="40dp"
+            app:layout_constraintLeft_toRightOf="@id/btnAccounts"
+            app:layout_constraintRight_toLeftOf="@id/btnReport"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageButton
+            android:id="@+id/btnReport"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_report"
             android:background="@null"
-            android:scaleType="fitCenter"/>
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
+            android:scaleType="fitCenter"
+            app:layout_constraintLeft_toRightOf="@id/view"
+            app:layout_constraintRight_toLeftOf="@id/btnMore"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
         <ImageButton
+            android:id="@+id/btnMore"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_more"
             android:background="@null"
-            android:scaleType="fitCenter"/>
-    </LinearLayout>
+            android:scaleType="fitCenter"
+            app:layout_constraintLeft_toRightOf="@id/btnReport"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageButton
+        android:id="@+id/btnTransact"
+        android:padding="5dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/white_circle"
+        android:layout_alignTop="@+id/navigationBar"
+        android:layout_marginTop="-35dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_transact"
+        android:scaleType="fitCenter"/>
 
 </RelativeLayout>

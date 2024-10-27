@@ -55,8 +55,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Please login with your information"
-                android:alpha="0.7"/>
+                android:text="Please login with your information"/>
 
             <View
                 android:layout_width="wrap_content"
@@ -66,7 +65,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Email Address:"
-                android:alpha="0.7"
                 android:textStyle="bold"/>
             <EditText
                 android:id="@+id/edtEmail"
@@ -83,14 +81,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Password:"
-                android:alpha="0.7"
                 android:textStyle="bold"/>
             <EditText
                 android:id="@+id/edtPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:drawableEnd="@drawable/password_icon"/>
+                android:drawableEnd="@drawable/ic_password_visible"
+                android:focusableInTouchMode="true"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -99,21 +97,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Remember Me"
-                    android:layout_centerVertical="true"
-                    android:alpha="0.7"/>
+                    android:layout_centerVertical="true"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Forgot Password?"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/corporate_red"/>
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="20dp"
                 android:gravity="center">
                 <TextView
                     android:id="@+id/txtRegisterAccount"
@@ -122,7 +120,8 @@
                     android:textAlignment="center"
                     android:text="Register Account"
                     android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/corporate_blue"/>
 
             </LinearLayout>
 
