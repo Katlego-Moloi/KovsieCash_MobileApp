@@ -9,8 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
     Context context;
@@ -31,13 +33,20 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
+        Locale locale = new Locale("en", "ZA");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        currencyFormatter.setMinimumFractionDigits(2);
+        currencyFormatter.setMaximumFractionDigits(2);
+
         Transaction transaction = transactions.get(position);
 
         // Set transaction data to views in the fragment
         holder.dateTextView.setText(transaction.getDateTime()); // Assuming "DateTime" is the field in your Transaction class
         holder.referenceTextView.setText(transaction.getReference());
-        holder.amountTextView.setText(String.valueOf(transaction.getAmount()));
-        holder.balanceTextView.setText(String.valueOf(transaction.getBalance()));
+        String formattedAmount = currencyFormatter.format(transaction.getAmount());
+        holder.amountTextView.setText(String.valueOf(formattedAmount));
+        String formattedBalance = currencyFormatter.format(transaction.getBalance());
+        holder.balanceTextView.setText(String.valueOf(formattedBalance));
     }
 
     @Override

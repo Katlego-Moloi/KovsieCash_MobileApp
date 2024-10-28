@@ -206,8 +206,8 @@
 
         <ImageButton
             android:id="@+id/btnDashboard"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_dashboard"
             android:background="@null"
             android:foregroundTint="@color/light_blue"
@@ -218,17 +218,10 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <View
-            android:layout_marginTop="3dp"
-            android:layout_width="40dp"
-            android:layout_height="2dp"
-            android:background="@color/white"
-            app:layout_constraintTop_toBottomOf="@id/btnDashboard"/>
-
         <ImageButton
             android:id="@+id/btnAccounts"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_accounts"
             android:background="@null"
             android:scaleType="fitCenter"
@@ -238,9 +231,17 @@
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <View
+            android:layout_marginTop="3dp"
+            android:layout_width="30dp"
+            android:layout_height="2dp"
+            android:background="@color/white"
+            app:layout_constraintLeft_toLeftOf="@id/btnAccounts"
+            app:layout_constraintTop_toBottomOf="@id/btnAccounts"/>
+
+        <View
             android:id="@+id/view"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             app:layout_constraintLeft_toRightOf="@id/btnAccounts"
             app:layout_constraintRight_toLeftOf="@id/btnReport"
             app:layout_constraintTop_toTopOf="parent"
@@ -248,8 +249,8 @@
 
         <ImageButton
             android:id="@+id/btnReport"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_report"
             android:background="@null"
             android:scaleType="fitCenter"
@@ -260,8 +261,8 @@
 
         <ImageButton
             android:id="@+id/btnMore"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_more"
             android:background="@null"
             android:scaleType="fitCenter"
@@ -273,12 +274,12 @@
 
     <ImageButton
         android:id="@+id/btnTransact"
-        android:padding="5dp"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:padding="4dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="@drawable/white_circle"
         android:layout_alignTop="@+id/navigationBar"
-        android:layout_marginTop="-35dp"
+        android:layout_marginTop="-25dp"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_transact"
         android:scaleType="fitCenter"/>

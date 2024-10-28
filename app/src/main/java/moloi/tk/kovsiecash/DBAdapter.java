@@ -3,8 +3,17 @@ package moloi.tk.kovsiecash;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.OptIn;
+import androidx.media3.common.util.UnstableApi;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,7 +22,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.ArrayList;
 
@@ -226,7 +234,24 @@ public class DBAdapter {
         return userName;
     }
 
+    public String getUserEmail(int userId) {
+        String userName = null; // Default value if not found
 
+        // 1. Query the database for the user with the given ID
+        Cursor cursor = db.rawQuery("SELECT Email FROM " + TABLE_USERS + " WHERE Id = ?", new String[]{String.valueOf(userId)});
+
+        // 2. Check if a user was found
+        if (cursor.moveToFirst()) {
+            // 3. Get the username from the cursor
+            userName = cursor.getString(cursor.getColumnIndexOrThrow("Email"));
+        }
+
+        // 4. Close the cursor
+        cursor.close();
+
+        // 5. Return the username (or null if not found)
+        return userName;
+    }
 
     public ArrayList<Transaction> getRecentTransactions(int userId, int transactionCount) {
         ArrayList<Transaction> transactions = new ArrayList<>();
@@ -305,6 +330,20 @@ public class DBAdapter {
         return accounts;
     }
 
+    public boolean CheckForAccount(String accountNumber)
+    {
+        open();
+        boolean accountFound = false; // Default value if not found
+
+        Cursor cursor = db.rawQuery("SELECT AccountName FROM " + TABLE_ACCOUNTS + " WHERE AccountNumber = ?", new String[]{String.valueOf(accountNumber)});
+
+        if (cursor.moveToFirst()) {
+            accountFound = true;
+        }
+
+        return accountFound;
+    }
+
     // Check if the database is already populated
     public boolean isDatabasePopulated() {
         open();  // Ensure the database is open
@@ -370,15 +409,13 @@ public class DBAdapter {
     }
 
     // Insert an account into the database
-    private void insertAccount(String accountName, String accountNumber, double balance, long userId) {
+    public void insertAccount(String accountName, String accountNumber, double balance, long userId) {
         ContentValues values = new ContentValues();
         values.put("AccountName", accountName);
         values.put("AccountNumber", accountNumber);
         values.put("Balance", balance);
         values.put("UserId", userId);
         db.insert(TABLE_ACCOUNTS, null, values);
-
-
     }
 
     // Populate transactions and notifications
@@ -387,26 +424,35 @@ public class DBAdapter {
         Random random = new Random();
 
         while (cursor.moveToNext()) {
-            String accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("AccountNumber"));            double balance = 0;
+            String accountNumber = cursor.getString(cursor.getColumnIndexOrThrow("AccountNumber"));
+            double balance = 0;
             int userId = cursor.getInt(cursor.getColumnIndexOrThrow("UserId"));
 
             // Initial deposit
             double initialDeposit = 100 + (random.nextDouble() * 900);
             balance += initialDeposit;
-            insertTransaction(userId, accountNumber, "Initial Deposit", initialDeposit, "Deposit");
+            updateAccountBalance(accountNumber, 0);
+            insertTransaction(userId, accountNumber, "Initial Deposit", initialDeposit, "Deposit", "2024-01-01");
 
             // Random transactions
             int transactionCount = random.nextInt(50) + 1;
+            String[] arrRandomDates = new String[transactionCount];
+
+            for (int i = 0; i < transactionCount; i++)
+                arrRandomDates[i] = getRandomDateBeforeToday();
+
+            Arrays.sort(arrRandomDates);
+
             for (int i = 0; i < transactionCount; i++) {
                 boolean isWithdrawal = random.nextBoolean();
                 double amount = random.nextDouble() * balance / 2;
                 if (isWithdrawal && amount <= balance) {
                     balance -= amount;
-                    insertTransaction(userId, accountNumber, "Withdrawal", amount, "Withdrawal");
+                    insertTransaction(userId, accountNumber, "", amount, "Withdrawal", arrRandomDates[i]);
                 } else {
                     amount = 100 + (random.nextDouble() * 900);
                     balance += amount;
-                    insertTransaction(userId, accountNumber, "Deposit", amount, "Deposit");
+                    insertTransaction(userId, accountNumber, "", amount, "Deposit", arrRandomDates[i]);
                 }
             }
         }
@@ -414,10 +460,14 @@ public class DBAdapter {
     }
 
     // Insert a transaction
-    private void insertTransaction(int userId, String accountNumber, String reference, double amount, String type) {
+    private void insertTransaction(int userId, String accountNumber, String reference, double amount, String type, String date) {
         // 1. Get current account balance
         double currentBalance = getAccountBalance(accountNumber);
-        String date = getRandomDateBeforeToday();
+
+        if (date.isBlank())
+        {
+            date = getRandomDateBeforeToday();
+        }
 
         // 2. Calculate new balance based on transaction type
         double newBalance = type.equals("Deposit")
@@ -427,9 +477,9 @@ public class DBAdapter {
         // 3. Create ContentValues for transaction
         ContentValues transactionValues = new ContentValues();
         transactionValues.put("AccountNumber", accountNumber);
-        transactionValues.put("Reference", reference);
+        transactionValues.put("Reference", reference.isBlank()? generateReference(type):reference);
         transactionValues.put("Balance", newBalance); // Updated balance
-        transactionValues.put("Amount", amount);
+        transactionValues.put("Amount", type.equals("Deposit")? +amount : -amount);
         transactionValues.put("DateTime", date);
         transactionValues.put("Type", type);
 
@@ -444,14 +494,94 @@ public class DBAdapter {
                 date, type);
     }
 
+    public int getUserByAccountNumber(String accountNumber) {
+        int userId = -1; // Default value if not found
+
+        // 1. Query the database for the user with the given email
+        Cursor cursor = db.rawQuery("SELECT UserId FROM " + TABLE_ACCOUNTS + " WHERE AccountNumber = ?", new String[]{accountNumber});
+
+        // 2. Check if a user was found
+        if (cursor.moveToFirst()) {
+            // 3. Get the user ID from the cursor
+            userId = cursor.getInt(cursor.getColumnIndexOrThrow("UserId"));
+        }
+
+        // 4. Close the cursor
+        cursor.close();
+
+        // 5. Return the user ID (or -1 if not found)
+        return userId;
+    }
+
+    public void insertPayment(int userIdFrom, int userIdTo, String accountNumberFrom, String accountNumberTo,
+                                   String reference, double amount) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        insertTransaction(userIdFrom, accountNumberFrom, reference, amount, "Withdrawal",
+                LocalDate.now(ZoneId.systemDefault()).format(formatter));
+        insertTransaction(userIdTo, accountNumberTo, reference, amount, "Deposit",
+                LocalDate.now(ZoneId.systemDefault()).format(formatter));
+    }
+
+    public void insertTransfer(int userId, String accountNumberFrom, String accountNumberTo,
+                               String reference, double amount) {
+        // 1. Get current account balance
+        double currentBalance = getAccountBalance(accountNumberFrom);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // 2. Calculate new balance based on transaction type
+        double newBalance = currentBalance - amount;
+
+        // 3. Create ContentValues for transaction
+        ContentValues transactionValues = new ContentValues();
+        transactionValues.put("AccountNumber", accountNumberFrom);
+        transactionValues.put("Reference", reference.isBlank()? generateReference("Transfer"):reference);
+        transactionValues.put("Balance", newBalance);
+        transactionValues.put("Amount", -amount);
+        transactionValues.put("DateTime", LocalDate.now(ZoneId.systemDefault()).format(formatter));
+        transactionValues.put("Type", "Transfer");
+
+        // 4. Insert transaction record
+        db.insert(TABLE_TRANSACTIONS, null, transactionValues);
+
+        // 5. Update account balance
+        updateAccountBalance(accountNumberFrom, newBalance);
+
+        // 6. Insert notification
+        insertNotification(userId, "Transfer " + reference + " of " + amount,
+                LocalDate.now(ZoneId.systemDefault()).format(formatter), "Transfer");
+
+        // 1. Get current account balance
+        currentBalance = getAccountBalance(accountNumberTo);
+
+        // 2. Calculate new balance based on transaction type
+        newBalance = currentBalance + amount;
+
+        // 3. Create ContentValues for transaction
+        transactionValues = new ContentValues();
+        transactionValues.put("AccountNumber", accountNumberTo);
+        transactionValues.put("Reference", reference.isBlank()? generateReference("Transfer"):reference);
+        transactionValues.put("Balance", newBalance); // Updated balance
+        transactionValues.put("Amount", +amount);
+        transactionValues.put("DateTime", LocalDate.now(ZoneId.systemDefault()).format(formatter));
+        transactionValues.put("Type", "Transfer");
+
+        // 4. Insert transaction record
+        db.insert(TABLE_TRANSACTIONS, null, transactionValues);
+
+        // 5. Update account balance
+        updateAccountBalance(accountNumberTo, newBalance);
+    }
+
     // Helper function to get account balance
     private double getAccountBalance(String accountNumber) {
         // Query the accounts table to get the balance for the given accountNumber
+        open();
         Cursor cursor = db.rawQuery("SELECT Balance FROM " + TABLE_ACCOUNTS + " WHERE AccountNumber = ?", new String[]{accountNumber});
         if (cursor.moveToFirst()) {
             return cursor.getDouble(cursor.getColumnIndexOrThrow("Balance"));
         }
         cursor.close();
+
         return 0.0; // Or handle the case where account is not found
     }
 
@@ -469,7 +599,7 @@ public class DBAdapter {
         values.put("NotificationDescription", description);
         values.put("NotificationDateTime", notiDate);
         values.put("Type", type);
-        values.put("Status", 0); // 0 for unread
+        values.put("Status", 0);
         db.insert(TABLE_NOTIFICATIONS, null, values);
     }
 
@@ -477,6 +607,36 @@ public class DBAdapter {
     private String generateAccountNumber() {
         Random random = new Random();
         return String.format("%010d", random.nextInt(1000000000));
+    }
+
+    public static String generateReference(String transactionType) {
+        // Get the current date and time in the format "yyyyMMddHHmmss"
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String timestamp = dateFormat.format(new Date());
+
+        // Generate a random 4-digit number for extra uniqueness
+        Random random = new Random();
+        int randomDigits = 1000 + random.nextInt(9000);
+
+        // Determine the abbreviation for the transaction type
+        String transactionAbbreviation;
+        switch (transactionType.toLowerCase()) {
+            case "transfer":
+                transactionAbbreviation = "TRF";
+                break;
+            case "deposit":
+                transactionAbbreviation = "DEP";
+                break;
+            case "withdrawal":
+                transactionAbbreviation = "WTH";
+                break;
+            default:
+                transactionAbbreviation = "UNK";
+                break;
+        }
+
+        // Combine the components into a single reference string
+        return transactionAbbreviation + "-" + timestamp + "-" + randomDigits;
     }
 
     public static String getRandomDateBeforeToday() {

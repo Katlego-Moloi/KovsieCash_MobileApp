@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     int userId;
     String userName;
 
-    ImageButton btnAccounts;
+    ImageButton btnAccounts, btnTransact, btnMore, btnReport;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnAccounts = findViewById(R.id.btnAccounts);
-        ImageButton btnMore = findViewById(R.id.btnMore);
+        btnTransact = findViewById(R.id.btnTransact);
+        btnMore = findViewById(R.id.btnMore);
 
         // Get Instance of Database
         dbAdapter = DBAdapter.getInstance(this);
@@ -81,11 +82,26 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
-        btnMore.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MoreActivity.class);
+        btnTransact.setOnClickListener(v -> {
+            // Create the intent and add the user ID
+            Intent intent = new Intent(MainActivity.this, TransactActivity.class);
+            intent.putExtra("USER_ID", userId);
             startActivity(intent);
             finish();
         });
 
+        btnMore.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MoreActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
+            finish();
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        dbAdapter.close(); // Close the database connection to avoid leaks
     }
 }

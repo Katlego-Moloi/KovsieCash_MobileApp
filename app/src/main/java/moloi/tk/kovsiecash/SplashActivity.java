@@ -5,22 +5,27 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-public class SplashActivity extends AppCompatActivity {
+import java.io.IOException;
 
+public class SplashActivity extends AppCompatActivity {
+    DBAdapter dbAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        new Handler().postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                startActivity(new
-                        Intent("moloi.tk.kovsiecash.LoginActivity"));
-                finish();
+        new Handler().postDelayed(() -> {
+            dbAdapter = DBAdapter.getInstance(this);
+            dbAdapter.open();
+            try {
+                dbAdapter.populateDatabase();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        }, 3000);
+
+            startActivity(new Intent("moloi.tk.kovsiecash.LoginActivity"));
+            finish();
+        }, 2000);
+
     }
 }

@@ -30,14 +30,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Get Instance of Database
-        Toast.makeText(this, "Yessirski Opened", Toast.LENGTH_SHORT).show();
         dbAdapter = DBAdapter.getInstance(this);
         dbAdapter.open();
-        try {
-            dbAdapter.populateDatabase();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         // Declare and Instantiate components
         Button btnLogin = findViewById(R.id.btnLogin);

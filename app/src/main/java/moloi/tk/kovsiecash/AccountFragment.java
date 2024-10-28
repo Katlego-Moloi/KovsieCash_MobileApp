@@ -1,12 +1,21 @@
 package moloi.tk.kovsiecash;
+import android.content.ClipData;
+import android.content.Context;
+import android.content.ClipboardManager;
+import android.content.ClipData;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class AccountFragment extends Fragment {
 
@@ -46,8 +55,24 @@ public class AccountFragment extends Fragment {
         TextView userNameTextView = view.findViewById(R.id.txtUsername);
         userNameTextView.setText(userName);
 
+        Button copyAccountNumber = view.findViewById(R.id.copyAccountNumber);
+
         TextView balanceTextView = view.findViewById(R.id.txtBalance);
-        balanceTextView.setText("Balance: " + balance);
+        Locale locale = new Locale("en", "ZA");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        String formattedBalance = currencyFormatter.format(balance);
+        currencyFormatter.setMinimumFractionDigits(2);
+        currencyFormatter.setMaximumFractionDigits(2);
+        balanceTextView.setText(formattedBalance);
+
+        copyAccountNumber.setOnClickListener(v -> {
+            ClipboardManager clipboard = (ClipboardManager)(requireContext().getSystemService(Context.CLIPBOARD_SERVICE));
+            ClipData clip = ClipData.newPlainText("Account Number", accountNumberTextView.getText().toString());
+            clipboard.setPrimaryClip(clip);
+
+            // Optional: Show a Toast message to indicate success
+            Toast.makeText(requireContext(), "Account number copied to clipboard", Toast.LENGTH_SHORT).show();
+        });
 
         return view;
     }

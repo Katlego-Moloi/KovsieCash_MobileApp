@@ -1,6 +1,7 @@
 package moloi.tk.kovsiecash;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +10,8 @@ import java.io.IOException;
 public class MoreActivity extends AppCompatActivity {
     // Declare Variables
     private DBAdapter dbAdapter;
+    TextView txtUserName, txtEmail;
+    int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,11 +21,17 @@ public class MoreActivity extends AppCompatActivity {
         // Get Instance of Database
         dbAdapter = DBAdapter.getInstance(this);
         dbAdapter.open();
-        try {
-            dbAdapter.populateDatabase();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
+        userId = getIntent().getIntExtra("USER_ID", -1);
+
+        // Initialise Component Variables
+        txtUserName = findViewById(R.id.txtUsername);
+        txtUserName.setText(dbAdapter.getUserName(userId));
+        txtEmail = findViewById(R.id.txtEmail);
+        txtUserName.setText(dbAdapter.getUserEmail(userId));
+
+
+
     }
 
     @Override

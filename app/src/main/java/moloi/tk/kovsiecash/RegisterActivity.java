@@ -42,11 +42,6 @@ public class RegisterActivity extends AppCompatActivity {
         // Get Instance of Database
         dbAdapter = DBAdapter.getInstance(this);
         dbAdapter.open();
-        try {
-            dbAdapter.populateDatabase();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         // Instantiate component variables
         edtIdNumber = findViewById(R.id.edtIdNumber);

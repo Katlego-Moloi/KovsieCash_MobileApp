@@ -1,6 +1,8 @@
 package moloi.tk.kovsiecash;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
@@ -27,6 +29,8 @@ public class AccountActivity extends AppCompatActivity {
     int userId;
     String userName;
 
+    ImageButton btnTransact, btnDashboard, btnMore, btnReport;
+
     ImageButton btnAccounts;
 
     @Override
@@ -48,6 +52,12 @@ public class AccountActivity extends AppCompatActivity {
         accounts = dbAdapter.getUserAccounts(userId, 30);
         userName = dbAdapter.getUserName(userId);
 
+        // Initialise Componenets
+        btnDashboard = findViewById(R.id.btnDashboard);
+        btnTransact = findViewById(R.id.btnTransact);
+        btnReport = findViewById(R.id.btnReport);
+        btnMore = findViewById(R.id.btnMore);
+
         Spinner accountSpinner = findViewById(R.id.account_spinner);
         List<String> accountNames = dbAdapter.getAccountNames(userId);
 
@@ -55,14 +65,50 @@ public class AccountActivity extends AppCompatActivity {
                 android.R.layout.simple_dropdown_item_1line, accountNames);
         accountSpinner.setAdapter(accountsAdapter);
 
-        // Fetch recent transactions
-        ArrayList<Transaction> recentTransactions = dbAdapter.getRecentTransactions(userId, 30);
+        accountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Fetch recent transactions
+                ArrayList<Transaction> accountTransactions = (ArrayList<Transaction>) accounts.get(position).getTransactions();
 
-        // Set up RecyclerView
-        RecyclerView recyclerView = findViewById(R.id.transaction_recyclerview);
+                // Set up RecyclerView
+                RecyclerView recyclerView = findViewById(R.id.transaction_recyclerview);
 
-        TransactionAdapter adapter = new TransactionAdapter(this, recentTransactions);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                TransactionAdapter adapter = new TransactionAdapter(AccountActivity.this, accountTransactions);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(AccountActivity.this));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        btnTransact.setOnClickListener(v -> {
+            // Create the intent and add the user ID
+            Intent intent = new Intent(AccountActivity.this, TransactActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
+            finish();
+        });
+
+        btnDashboard.setOnClickListener(v -> {
+            // Create the intent and add the user ID
+            Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
+            finish();
+        });
+
+        btnMore.setOnClickListener(v -> {
+            // Create the intent and add the user ID
+            Intent intent = new Intent(AccountActivity.this, MoreActivity.class);
+            intent.putExtra("USER_ID", userId);
+            startActivity(intent);
+            finish();
+        });
+
     }
+
 }

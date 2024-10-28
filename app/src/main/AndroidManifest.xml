@@ -72,6 +72,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".TransactActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.TransactActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

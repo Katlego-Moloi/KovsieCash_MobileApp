@@ -1,4 +1,5 @@
 Admin,admin@kovsiecash.ac.za,Admin@2024,Admin
+MoloiTK,moloitk@ufs.ac.za,Work@20242,Customer
 ThaboM,thabo.gamer@tmail.com,Th@bo2024,Customer
 SiphoM,sipho.theboss@yahoo.com,Password123!,Customer
 NandiK,nandi.koolkat@gmail.com,Secure@2023,Customer
