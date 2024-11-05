@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:id="@+id/accountDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+        <TextView
+            android:id="@+id/txtAccountName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Account Name"/>
+
+        <TextView
+            android:id="@+id/txtAccountNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1234657980"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtBalance"
+        app:layout_constraintTop_toTopOf="@id/accountDetails"
+        app:layout_constraintRight_toLeftOf="@id/btnInfo"
+        android:layout_marginRight="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="R23.00"/>
+
+    <ImageButton
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/btnInfo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="5dp"
+        android:background="@drawable/grey_circle"
+        android:src="@drawable/ic_info_outline"
+        android:scaleType="fitCenter"
+        android:padding="2dp"/>
+
+    <View
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/btnInfo"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/cool_grey"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

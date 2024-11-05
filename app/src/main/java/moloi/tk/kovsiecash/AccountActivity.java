@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,8 +20,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class AccountActivity extends AppCompatActivity {
     // Declare Variables
@@ -32,6 +35,7 @@ public class AccountActivity extends AppCompatActivity {
     ImageButton btnTransact, btnDashboard, btnMore, btnReport;
 
     ImageButton btnAccounts;
+    TextView txtDebit, txtCredit, txtBalance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,15 @@ public class AccountActivity extends AppCompatActivity {
         btnReport = findViewById(R.id.btnReport);
         btnMore = findViewById(R.id.btnMore);
 
+        Locale locale = new Locale("en", "ZA");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        currencyFormatter.setMinimumFractionDigits(2);
+        currencyFormatter.setMaximumFractionDigits(2);
+        txtDebit = findViewById(R.id.txtDebit);
+        txtCredit = findViewById(R.id.txtCredit);
+        txtBalance = findViewById(R.id.txtBalance);
+
+
         Spinner accountSpinner = findViewById(R.id.account_spinner);
         List<String> accountNames = dbAdapter.getAccountNames(userId);
 
@@ -70,6 +83,13 @@ public class AccountActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 // Fetch recent transactions
                 ArrayList<Transaction> accountTransactions = (ArrayList<Transaction>) accounts.get(position).getTransactions();
+
+
+                double balance = accounts.get(position).getBalance();
+                txtBalance.setText(currencyFormatter.format(balance));
+                double[] debitCredit = dbAdapter.getDebitCreditForCurrentMonth(accounts.get(position).getAccountNumber());
+                txtDebit.setText(currencyFormatter.format(debitCredit[0]));
+                txtCredit.setText(currencyFormatter.format(debitCredit[1]));
 
                 // Set up RecyclerView
                 RecyclerView recyclerView = findViewById(R.id.transaction_recyclerview);
@@ -106,9 +126,14 @@ public class AccountActivity extends AppCompatActivity {
             Intent intent = new Intent(AccountActivity.this, MoreActivity.class);
             intent.putExtra("USER_ID", userId);
             startActivity(intent);
-            finish();
         });
 
     }
 
+    @Override
+    protected void onDestroy() {
+        dbAdapter.close();
+        super.onDestroy();
+
+    }
 }

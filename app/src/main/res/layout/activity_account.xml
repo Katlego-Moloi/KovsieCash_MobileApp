@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".AccountActivity">
 
     <LinearLayout
         android:id="@+id/main_header"
@@ -77,15 +77,16 @@
                 app:layout_constraintLeft_toRightOf="@+id/walletIcon"/>
 
             <TextView
-                android:layout_marginLeft="15dp"
-                android:textColor="@color/black"
+                android:id="@+id/txtBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="R1000"
+                android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:text="R1000"
-                app:layout_constraintLeft_toRightOf="@id/walletIcon"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/walletIcon" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -114,13 +115,14 @@
                 android:text="Debit this Month"/>
 
             <TextView
-                android:layout_marginLeft="15dp"
-                android:textColor="@color/black"
+                android:id="@+id/txtDebit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="R1000"
+                android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="R1000"/>
+                android:textStyle="bold" />
             
         </LinearLayout>
 
@@ -150,13 +152,14 @@
                 android:text="Credit this Month"/>
 
             <TextView
-                android:layout_marginLeft="15dp"
-                android:textColor="@color/black"
+                android:id="@+id/txtCredit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:text="R1000"
+                android:textColor="@color/black"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="R1000"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -198,7 +201,7 @@
         android:id="@+id/navigationBar"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:background="@drawable/white_circle"
         android:backgroundTint="@color/corporate_blue"
         android:paddingHorizontal="25dp"

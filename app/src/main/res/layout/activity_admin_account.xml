@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".AdminAccountActivity">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:padding="4dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/white_circle"
+        android:src="@drawable/arrow_back"
+        android:scaleType="fitCenter"/>
+
+    <LinearLayout
+        android:id="@+id/main_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="10dp">
+        <TextView
+            android:id="@+id/txtAccountNumber"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:text="0123456456798"
+            android:textColor="@color/corporate_blue"
+            android:textSize="32dp"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/RecentTransactions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/InfoCard"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Transactions"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/corporate_blue"/>
+
+        <TextView
+            android:layout_marginTop="-5dp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="These are the most recent transactions"
+            android:alpha="0.7"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_below="@id/RecentTransactions"
+            android:id="@+id/transaction_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</LinearLayout>

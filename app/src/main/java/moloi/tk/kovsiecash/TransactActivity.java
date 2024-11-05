@@ -82,18 +82,26 @@ public class TransactActivity extends AppCompatActivity {
                 Toast.makeText(TransactActivity.this, "Please enter a valid amount!", Toast.LENGTH_SHORT).show();
             }
             else if (strAccountFrom.isEmpty()) {
-                Toast.makeText(TransactActivity.this, "Please select an which account you would like to transfer to!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(TransactActivity.this, "Please select an which account you would like to transfer from!", Toast.LENGTH_SHORT).show();
+            }else if (dbAdapter.getAccountByAccountNumber(strAccountFrom, 1).getBalance() < amount )
+            {
+                Toast.makeText(TransactActivity.this, "Unfortunately you do not have enough funds in that account", Toast.LENGTH_SHORT).show();
             }
             else if (radgrpTransactionType.getCheckedRadioButtonId() == R.id.radTransfer)
             {
                 if (strAccountTo.isEmpty())
                 {
                     Toast.makeText(TransactActivity.this, "Please select an account to tranfer to!", Toast.LENGTH_SHORT).show();
-                } else {
+                } else if (strAccountTo.matches(strAccountFrom))
+                {
+                    Toast.makeText(TransactActivity.this, "Cannot send to same account!", Toast.LENGTH_SHORT).show();
+                }else {
                     dbAdapter.insertTransfer(userId, strAccountFrom, strAccountTo, reference, amount);
                     Toast.makeText(TransactActivity.this, "Transaction Complete", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
+                    Intent intent = new Intent(TransactActivity.this, MainActivity.class);
+                    intent.putExtra("USER_ID", userId);
+                    startActivity(intent);
+                    finish();                }
             }
             else if (radgrpTransactionType.getCheckedRadioButtonId() == R.id.radPayment)
             {
@@ -102,6 +110,9 @@ public class TransactActivity extends AppCompatActivity {
                 if (strAccountTo.isEmpty())
                 {
                     Toast.makeText(TransactActivity.this, "Please enter the account number you would like to pay to!", Toast.LENGTH_SHORT).show();
+                }else if (strAccountTo.matches(strAccountFrom))
+                {
+                    Toast.makeText(TransactActivity.this, "Cannot send to same account!", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -109,8 +120,10 @@ public class TransactActivity extends AppCompatActivity {
                     {
                         dbAdapter.insertPayment(userId, dbAdapter.getUserByAccountNumber(strAccountTo), strAccountFrom, strAccountTo, reference, amount);
                         Toast.makeText(TransactActivity.this, "Payment Complete", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
+                        Intent intent = new Intent(TransactActivity.this, MainActivity.class);
+                        intent.putExtra("USER_ID", userId);
+                        startActivity(intent);
+                        finish();                    }
                     else
                     {
                         Toast.makeText(TransactActivity.this, "Account does not exist!", Toast.LENGTH_SHORT).show();
@@ -210,8 +223,14 @@ public class TransactActivity extends AppCompatActivity {
             Intent intent = new Intent(TransactActivity.this, MoreActivity.class);
             intent.putExtra("USER_ID", userId);
             startActivity(intent);
-            finish();
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        dbAdapter.close();
+        super.onDestroy();
+
     }
 
 }

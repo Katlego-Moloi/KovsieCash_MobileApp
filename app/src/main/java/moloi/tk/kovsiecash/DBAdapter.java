@@ -8,11 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.OptIn;
+import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 
 import java.io.BufferedReader;
@@ -57,7 +61,7 @@ public class DBAdapter {
             "AccountName TEXT NOT NULL," +
             "Balance REAL NOT NULL," +
             "UserId INTEGER NOT NULL," +
-            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id));";
+            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE);";
 
     // SQL to create Transactions table
     private static final String CREATE_TABLE_TRANSACTIONS = "CREATE TABLE " + TABLE_TRANSACTIONS + "(" +
@@ -68,7 +72,7 @@ public class DBAdapter {
             "Type TEXT NOT NULL," +
             "Balance REAL NOT NULL," +
             "AccountNumber TEXT NOT NULL," +
-            "FOREIGN KEY(AccountNumber) REFERENCES " + TABLE_ACCOUNTS + "(AccountNumber));";
+            "FOREIGN KEY(AccountNumber) REFERENCES " + TABLE_ACCOUNTS + "(AccountNumber) ON DELETE CASCADE);";
 
     // SQL to create Notifications table
     private static final String CREATE_TABLE_NOTIFICATIONS = "CREATE TABLE " + TABLE_NOTIFICATIONS + "(" +
@@ -78,7 +82,7 @@ public class DBAdapter {
             "NotificationDateTime TEXT NOT NULL," +
             "Status INTEGER NOT NULL," +
             "UserID INTEGER NOT NULL," +
-            "FOREIGN KEY(UserID) REFERENCES " + TABLE_USERS + "(Id));";
+            "FOREIGN KEY(UserID) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE);";
 
     // SQL to create Advice table
     private static final String CREATE_TABLE_ADVICE = "CREATE TABLE " + TABLE_ADVICE + "(" +
@@ -88,8 +92,8 @@ public class DBAdapter {
             "AdviceDate TEXT NOT NULL," +
             "AdviserId INTEGER NOT NULL," +
             "AdviseeId INTEGER NOT NULL," +
-            "FOREIGN KEY(AdviserId) REFERENCES " + TABLE_USERS + "(Id)," +
-            "FOREIGN KEY(AdviseeId) REFERENCES " + TABLE_USERS + "(Id));";
+            "FOREIGN KEY(AdviserId) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE," +
+            "FOREIGN KEY(AdviseeId) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE);";
 
     // SQL to create Beneficiaries table
     private static final String CREATE_TABLE_BENEFICIARIES = "CREATE TABLE " + TABLE_BENEFICIARIES + "(" +
@@ -97,7 +101,7 @@ public class DBAdapter {
             "BeneficiaryName TEXT NOT NULL," +
             "AccountNumbers TEXT NOT NULL," +
             "UserId INTEGER NOT NULL," +
-            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id));";
+            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE);";
 
     // SQL to create Reviews table
     private static final String CREATE_TABLE_REVIEWS = "CREATE TABLE " + TABLE_REVIEWS + "(" +
@@ -107,7 +111,7 @@ public class DBAdapter {
             "ReviewRating INTEGER NOT NULL," +
             "ReviewDate TEXT NOT NULL," +
             "UserId INTEGER NOT NULL," +
-            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id));";
+            "FOREIGN KEY(UserId) REFERENCES " + TABLE_USERS + "(Id) ON DELETE CASCADE);";
 
     // Helper class to manage the database
     private static class DatabaseHelper extends SQLiteOpenHelper {
@@ -178,25 +182,25 @@ public class DBAdapter {
     }
 
     // Method to log in a user
-    public boolean logIn(String email, String password) {
-        try {
-            open();  // Ensure the database is open
-            String query = "SELECT * FROM " + TABLE_USERS + " WHERE email = ? AND password = ? LIMIT 1";
-            Cursor cursor = db.rawQuery(query, new String[]{email, password});
+    public String logIn(String email, String password) {
+        String userRole = "";
 
-            boolean userExists = cursor.moveToFirst();
-            cursor.close();
-            return userExists;
-        } catch (Exception e) {
-            // Log the exception or print it
-            e.printStackTrace();
-            return false;
+        open();  // Ensure the database is open
+        String query = "SELECT * FROM " + TABLE_USERS + " WHERE email = ? AND password = ? LIMIT 1";
+        Cursor cursor = db.rawQuery(query, new String[]{email, password});
+
+        if (cursor.moveToFirst()) {
+            // 3. Get the user ID from the cursor
+            userRole = cursor.getString(cursor.getColumnIndexOrThrow("Role"));
         }
+
+        cursor.close();
+
+        return userRole;
     }
 
-
-
     public int getUserId(String email) {
+        open();
         int userId = -1; // Default value if not found
 
         // 1. Query the database for the user with the given email
@@ -217,6 +221,7 @@ public class DBAdapter {
 
     public String getUserName(int userId) {
         String userName = null; // Default value if not found
+        open();
 
         // 1. Query the database for the user with the given ID
         Cursor cursor = db.rawQuery("SELECT UserName FROM " + TABLE_USERS + " WHERE Id = ?", new String[]{String.valueOf(userId)});
@@ -235,6 +240,7 @@ public class DBAdapter {
     }
 
     public String getUserEmail(int userId) {
+        open();
         String userName = null; // Default value if not found
 
         // 1. Query the database for the user with the given ID
@@ -254,6 +260,7 @@ public class DBAdapter {
     }
 
     public ArrayList<Transaction> getRecentTransactions(int userId, int transactionCount) {
+        open();
         ArrayList<Transaction> transactions = new ArrayList<>();
 
         Cursor cursor = db.rawQuery(
@@ -281,7 +288,36 @@ public class DBAdapter {
         return transactions;
     }
 
+    public ArrayList<Customer> getAllCustomers() {
+        open();
+        ArrayList<Customer> customers = new ArrayList<>();
+
+        // Query to get all customers
+        String customerQuery = "SELECT * FROM " + TABLE_USERS + " WHERE Role = 'Customer' ORDER BY Id DESC";
+        Cursor customerCursor = db.rawQuery(customerQuery, null);
+
+        if (customerCursor.moveToFirst()) {
+            do {
+                int userId = customerCursor.getInt(customerCursor.getColumnIndexOrThrow("Id"));
+                String username = customerCursor.getString(customerCursor.getColumnIndexOrThrow("UserName"));
+                String email = customerCursor.getString(customerCursor.getColumnIndexOrThrow("Email"));
+
+                // Get accounts for the current customer
+                ArrayList<Account> accounts = (ArrayList<Account>) getUserAccounts(userId, 2);
+
+                // Create a Customer object and add it to the list
+                Customer customer = new Customer(userId, username, email, accounts);
+                customers.add(customer);
+            } while (customerCursor.moveToNext());
+        }
+
+        customerCursor.close();
+        db.close();
+        return customers;
+    }
+
     public List<String> getAccountNames(int userId) {
+        open();
         List<String> accountNames = new ArrayList<>();
         Cursor cursor = db.rawQuery("SELECT AccountName FROM " + TABLE_ACCOUNTS + " WHERE UserId = ?", new String[]{String.valueOf(userId)});
         while (cursor.moveToNext()) {
@@ -293,6 +329,7 @@ public class DBAdapter {
 
     public List<Account> getUserAccounts(int userId, int transactionCount) {
         List<Account> accounts = new ArrayList<>();
+        open();
 
         // 1. Query to get user's accounts
         Cursor accountCursor = db.rawQuery("SELECT * FROM " + TABLE_ACCOUNTS + " WHERE UserId = ?", new String[]{String.valueOf(userId)});
@@ -330,6 +367,42 @@ public class DBAdapter {
         return accounts;
     }
 
+    public Account getAccountByAccountNumber(String accountNumber, int transactionCount) {
+        open();
+
+        // 1. Query to get user's accounts
+        Cursor accountCursor = db.rawQuery("SELECT * FROM " + TABLE_ACCOUNTS + " WHERE AccountNumber = ?", new String[]{String.valueOf(accountNumber)});
+
+        // 2. Iterate through accounts and get transactions
+        accountCursor.moveToNext();
+        String accountName = accountCursor.getString(accountCursor.getColumnIndexOrThrow("AccountName"));
+        double balance = accountCursor.getDouble(accountCursor.getColumnIndexOrThrow("Balance"));
+        int userIdInAccount = accountCursor.getInt(accountCursor.getColumnIndexOrThrow("UserId"));
+
+        // 3. Query to get transactions for this account
+        Cursor transactionCursor = db.rawQuery("SELECT * FROM " + TABLE_TRANSACTIONS
+                        + " WHERE AccountNumber = ? ORDER BY TransactionId DESC LIMIT ?",
+                new String[]{accountNumber, String.valueOf(transactionCount)});
+
+        List<Transaction> transactions = new ArrayList<>();
+        while (transactionCursor.moveToNext()) {
+            int transactionId = transactionCursor.getInt(transactionCursor.getColumnIndexOrThrow("TransactionId"));
+            String reference = transactionCursor.getString(transactionCursor.getColumnIndexOrThrow("Reference"));
+            String dateTime = transactionCursor.getString(transactionCursor.getColumnIndexOrThrow("DateTime"));
+            double amount = transactionCursor.getDouble(transactionCursor.getColumnIndexOrThrow("Amount"));
+            String type = transactionCursor.getString(transactionCursor.getColumnIndexOrThrow("Type"));
+            double transactionBalance = transactionCursor.getDouble(transactionCursor.getColumnIndexOrThrow("Balance")); // Balance after transaction
+
+            transactions.add(new Transaction(transactionId, reference, dateTime, amount, type, transactionBalance, accountNumber));
+        }
+        transactionCursor.close();
+
+        // 4. Create Account object and add to list
+        accountCursor.close();
+
+        return new Account(accountNumber, accountName, balance, userIdInAccount, transactions);
+    }
+
     public boolean CheckForAccount(String accountNumber)
     {
         open();
@@ -346,6 +419,7 @@ public class DBAdapter {
 
     // Check if the database is already populated
     public boolean isDatabasePopulated() {
+        open();
         open();  // Ensure the database is open
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_USERS, null);
         cursor.moveToFirst(); // Move to the first row
@@ -356,6 +430,7 @@ public class DBAdapter {
 
     // Populate database if not already populated
     public void populateDatabase() throws IOException {
+        open();
         if (isDatabasePopulated()) {
             return; // Exit if the database is already populated
         }
@@ -385,6 +460,7 @@ public class DBAdapter {
 
     // Insert a user into the database
     public long insertUser(String username, String email, String password, String role) {
+        open();
         ContentValues values = new ContentValues();
         values.put("UserName", username);
         values.put("Email", email);
@@ -394,8 +470,41 @@ public class DBAdapter {
 
     }
 
+    public int updateUserDetails(int userId, String username, String email, String password, String role) {
+        open();
+        ContentValues values = new ContentValues();
+
+        // Put the updated values into the ContentValues object
+        values.put("UserName", username);
+        values.put("Email", email);
+        values.put("Password", password);
+        values.put("Role", role);
+
+        // Define the WHERE clause to specify which row to update
+        String whereClause = "Id = ?";
+        String[] whereArgs = {String.valueOf(userId)};
+
+        // Perform the update
+        int rowsAffected = db.update(TABLE_USERS, values, whereClause, whereArgs);
+        db.close();
+        return rowsAffected;
+    }
+
+
+    public void deleteUserById(int userId) {
+        open();
+        String whereClause = "Id = ?"; // Assuming 'Id' is the primary key column for users
+        String[] whereArgs = {String.valueOf(userId)};
+
+        int rowsAffected = db.delete(TABLE_USERS, whereClause, whereArgs);
+
+        db.close();
+    }
+
+
     // Create random accounts for a user
     private void createRandomAccounts(long userId) {
+        open();
         Random random = new Random();
         int accountCount = random.nextInt(2) + 1; // Create 1 or 2 accounts
 
@@ -410,6 +519,7 @@ public class DBAdapter {
 
     // Insert an account into the database
     public void insertAccount(String accountName, String accountNumber, double balance, long userId) {
+        open();
         ContentValues values = new ContentValues();
         values.put("AccountName", accountName);
         values.put("AccountNumber", accountNumber);
@@ -418,8 +528,14 @@ public class DBAdapter {
         db.insert(TABLE_ACCOUNTS, null, values);
     }
 
+    public void insertAccountByUserId(long userId, String accountName) {
+        open();
+        insertAccount(accountName, generateAccountNumber(), 0, userId);
+    }
+
     // Populate transactions and notifications
     private void populateTransactionsAndNotifications() {
+        open();
         Cursor cursor = db.query(TABLE_ACCOUNTS, null, null, null, null, null, null);
         Random random = new Random();
 
@@ -461,6 +577,7 @@ public class DBAdapter {
 
     // Insert a transaction
     private void insertTransaction(int userId, String accountNumber, String reference, double amount, String type, String date) {
+        open();
         // 1. Get current account balance
         double currentBalance = getAccountBalance(accountNumber);
 
@@ -468,6 +585,8 @@ public class DBAdapter {
         {
             date = getRandomDateBeforeToday();
         }
+
+        reference = reference.isBlank()? generateReference(type):reference;
 
         // 2. Calculate new balance based on transaction type
         double newBalance = type.equals("Deposit")
@@ -477,7 +596,7 @@ public class DBAdapter {
         // 3. Create ContentValues for transaction
         ContentValues transactionValues = new ContentValues();
         transactionValues.put("AccountNumber", accountNumber);
-        transactionValues.put("Reference", reference.isBlank()? generateReference(type):reference);
+        transactionValues.put("Reference", reference);
         transactionValues.put("Balance", newBalance); // Updated balance
         transactionValues.put("Amount", type.equals("Deposit")? +amount : -amount);
         transactionValues.put("DateTime", date);
@@ -490,11 +609,14 @@ public class DBAdapter {
         updateAccountBalance(accountNumber, newBalance);
 
         // 6. Insert notification
-        insertNotification(userId, "Transaction " + type + reference + " of " + amount,
+        Locale locale = new Locale("en", "ZA");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        insertNotification(userId, type + ": " + reference + "\n" +  currencyFormatter.format(amount),
                 date, type);
     }
 
     public int getUserByAccountNumber(String accountNumber) {
+        open();
         int userId = -1; // Default value if not found
 
         // 1. Query the database for the user with the given email
@@ -515,6 +637,7 @@ public class DBAdapter {
 
     public void insertPayment(int userIdFrom, int userIdTo, String accountNumberFrom, String accountNumberTo,
                                    String reference, double amount) {
+        open();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         insertTransaction(userIdFrom, accountNumberFrom, reference, amount, "Withdrawal",
                 LocalDate.now(ZoneId.systemDefault()).format(formatter));
@@ -524,6 +647,7 @@ public class DBAdapter {
 
     public void insertTransfer(int userId, String accountNumberFrom, String accountNumberTo,
                                String reference, double amount) {
+        open();
         // 1. Get current account balance
         double currentBalance = getAccountBalance(accountNumberFrom);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -547,7 +671,9 @@ public class DBAdapter {
         updateAccountBalance(accountNumberFrom, newBalance);
 
         // 6. Insert notification
-        insertNotification(userId, "Transfer " + reference + " of " + amount,
+        Locale locale = new Locale("en", "ZA");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(locale);
+        insertNotification(userId, "Transfer: " + reference + "\n" + currencyFormatter.format(amount),
                 LocalDate.now(ZoneId.systemDefault()).format(formatter), "Transfer");
 
         // 1. Get current account balance
@@ -572,6 +698,135 @@ public class DBAdapter {
         updateAccountBalance(accountNumberTo, newBalance);
     }
 
+    public void setNotificationRead(int notificationId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("Status", 1);
+
+        String whereClause = "NotificationId = ?";
+        String[] whereArgs = {String.valueOf(notificationId)};
+
+        int rowsAffected = db.update(TABLE_NOTIFICATIONS, values, whereClause, whereArgs);
+
+        db.close();
+    }
+
+    public void insertAdvice(String adviceTitle, String adviceDescription, String adviceDate, int adviserId, int adviseeId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("AdviceTitle", adviceTitle);
+        values.put("AdviceDescription", adviceDescription);
+        values.put("AdviceDate", adviceDate);
+        values.put("AdviserId", adviserId);
+        values.put("AdviseeId", adviseeId);
+
+        long adviceId = db.insert(TABLE_ADVICE, null, values);
+
+        // Create notification for the advisee
+        String notificationDescription = adviceTitle + " - " + adviceId;
+        insertNotification(adviseeId, notificationDescription, adviceDate, "Advice");
+    }
+
+
+    public void updateUserRole(int userID, String role) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("Role", role);
+
+        String whereClause = "Id = ?";
+        String[] whereArgs = {String.valueOf(userID)};
+
+        int rowsAffected = db.update(TABLE_USERS, values, whereClause, whereArgs);
+
+        db.close();
+    }
+
+    public int countUnreadNotis(int userId) {
+        open();
+        String query = "SELECT COUNT(*) FROM " + TABLE_NOTIFICATIONS + " WHERE UserID = ? AND Status = 0"; // Assuming 'Status = 0' means unread
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        int unreadCount = 0;
+        if (cursor.moveToFirst()) {
+            unreadCount = cursor.getInt(0);
+        }
+
+        cursor.close();
+        db.close();
+        return unreadCount;
+    }
+
+    public ArrayList<Notification> getUnreadNotis(int userId) {
+        open();
+        ArrayList<Notification> unreadNotifications = new ArrayList<>();
+        String query = "SELECT * FROM " + TABLE_NOTIFICATIONS + " WHERE UserID = ? AND Status = 0 ORDER BY NotificationId DESC"; // Assuming 'Status = 0' means unread
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int notificationID = cursor.getInt(cursor.getColumnIndexOrThrow("NotificationID"));
+                String type = cursor.getString(cursor.getColumnIndexOrThrow("Type"));
+                String notificationDescription = cursor.getString(cursor.getColumnIndexOrThrow("NotificationDescription"));
+                String notificationDateTime = cursor.getString(cursor.getColumnIndexOrThrow("NotificationDateTime"));
+                int status = cursor.getInt(cursor.getColumnIndexOrThrow("Status"));
+                int userID = cursor.getInt(cursor.getColumnIndexOrThrow("UserID"));
+
+                Notification notification = new Notification(notificationID, type, notificationDescription, notificationDateTime, status, userID);
+                unreadNotifications.add(notification);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return unreadNotifications;
+    }
+
+    public String[] getAdvice(int adviceID) {
+        open();
+        String query = "SELECT AdviceTitle, AdviceDescription FROM " + TABLE_ADVICE + " WHERE AdviceID = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(adviceID)});
+
+        String[] adviceDetails = new String[2]; // Array to store title and description
+
+        if (cursor.moveToFirst()) {
+            adviceDetails[0] = cursor.getString(cursor.getColumnIndexOrThrow("AdviceTitle"));
+            adviceDetails[1] = cursor.getString(cursor.getColumnIndexOrThrow("AdviceDescription"));
+        }
+
+        cursor.close();
+        return adviceDetails;
+    }
+
+
+    public void setUsersNotisRead(int userId) {
+        open();
+        ContentValues values = new ContentValues();
+        values.put("Status", 1);
+
+        String whereClause = "UserID = ? AND Type != ? AND Type != ?";
+        String[] whereArgs = {String.valueOf(userId), "RoleChange", "Advice"};
+
+        int rowsAffected = db.update(TABLE_NOTIFICATIONS, values, whereClause, whereArgs);
+
+        close();
+    }
+
+    public String getUserRole(int userId) {
+        open();
+        String query = "SELECT Role FROM " + TABLE_USERS + " WHERE Id = ?";
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(userId)});
+
+        String role = null;
+        if (cursor.moveToFirst()) {
+            role = cursor.getString(cursor.getColumnIndexOrThrow("Role"));
+        }
+
+        cursor.close();
+        db.close();
+        return role;
+    }
+
+
     // Helper function to get account balance
     private double getAccountBalance(String accountNumber) {
         // Query the accounts table to get the balance for the given accountNumber
@@ -587,6 +842,7 @@ public class DBAdapter {
 
     // Helper function to update account balance
     private void updateAccountBalance(String accountNumber, double newBalance) {
+        open();
         ContentValues accountValues = new ContentValues();
         accountValues.put("Balance", newBalance);
         db.update(TABLE_ACCOUNTS, accountValues, "AccountNumber = ?", new String[]{accountNumber});
@@ -594,6 +850,7 @@ public class DBAdapter {
 
     // Insert a notification
     public void insertNotification(int userId, String description, String notiDate, String type) {
+        open();
         ContentValues values = new ContentValues();
         values.put("UserID", userId);
         values.put("NotificationDescription", description);
@@ -637,6 +894,33 @@ public class DBAdapter {
 
         // Combine the components into a single reference string
         return transactionAbbreviation + "-" + timestamp + "-" + randomDigits;
+    }
+
+    public double[] getDebitCreditForCurrentMonth(String accountNumber) {
+        double[] arrDouble = new double[2];
+
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH) + 1; // Month is 0-indexed
+
+        Account account = getAccountByAccountNumber(accountNumber, 30);
+        arrDouble[0] = 0;
+        arrDouble[1] = 0;
+
+        for (Transaction transaction: account.getTransactions()) {
+            if (transaction.getDateTime().contains("-" + String.valueOf(currentMonth) + "-"))
+            {
+                if (transaction.getAmount() < 0)
+                {
+                    arrDouble[0] -= transaction.getAmount();
+                }
+                else
+                {
+                    arrDouble[1] += transaction.getAmount();
+                }
+            }
+        }
+
+        return arrDouble;
     }
 
     public static String getRandomDateBeforeToday() {

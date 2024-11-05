@@ -44,6 +44,16 @@
         </activity>
 
         <activity
+            android:name=".MainAdminActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.MainAdminActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".RegisterActivity"
             android:exported="true" >
             <intent-filter>
@@ -64,6 +74,26 @@
         </activity>
 
         <activity
+            android:name=".AccountDetailsActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.AccountDetailsActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".AdminAccountActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.AdminAccountActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".MoreActivity"
             android:exported="true" >
             <intent-filter>
@@ -78,6 +108,16 @@
             android:exported="true" >
             <intent-filter>
                 <action android:name="moloi.tk.kovsiecash.TransactActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".AdviceActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="moloi.tk.kovsiecash.AdviceActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

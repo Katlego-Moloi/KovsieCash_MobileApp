@@ -4,29 +4,37 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="6dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="50dp">
-        <ImageView
-            android:id="@+id/imgNotificationType"
+        <LinearLayout
+            android:id="@+id/notificationType"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_transact"/>
+            android:background="@drawable/blue_circle"
+            android:gravity="center">
+            <ImageView
+                android:id="@+id/imgNotificationType"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_transfer"
+                android:scaleType="fitCenter"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtNotification"
-            android:layout_width="wrap_content"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="@id/imgNotificationType"
+            app:layout_constraintLeft_toRightOf="@id/notificationType"
             android:layout_marginLeft="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:text="Notification Goes Here"/>
 
         <TextView
@@ -36,7 +44,6 @@
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginLeft="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:textSize="12sp"
             android:text="2024-08-27"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -46,25 +53,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_horizontal">
-        <ImageView
-            android:id="@+id/imgApprove"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+        <ImageButton
+            android:id="@+id/btnApprove"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_approve_outline"
-            android:layout_marginHorizontal="15dp"/>
-        <ImageView
-            android:id="@+id/imgDissaprove"
+            android:layout_marginHorizontal="15dp"
+            android:background="@null"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:id="@+id/btnDissaprove"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/ic_dissaprove_outline"
-            android:layout_marginHorizontal="15dp"/>
+            android:layout_marginHorizontal="15dp"
+            android:background="@null"
+            android:scaleType="fitCenter"/>
 
     </LinearLayout>
 

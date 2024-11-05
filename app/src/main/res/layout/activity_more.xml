@@ -20,7 +20,17 @@
             android:layout_width="match_parent"
             android:layout_height="189dp"
             android:background="@color/corporate_blue">
-
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/white_circle"
+                android:src="@drawable/arrow_back"
+                android:scaleType="fitCenter"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"/>
             <ImageView
                 android:id="@+id/imgArc"
                 android:layout_width="wrap_content"
@@ -78,202 +88,181 @@
             android:textSize="16sp"
             android:layout_marginBottom="20dp"/>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginVertical="4dp"
-            android:paddingHorizontal="10dp"
-            android:background="@drawable/white_circle"
-            app:layout_constraintStart_toStartOf="@id/txtEmail"
-            app:layout_constraintTop_toTopOf="parent"
-            android:backgroundTint="@color/cool_grey">
-
-            <ImageView
-                android:id="@+id/imgNotifications"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_notifications_bell" />
-
-            <TextView
-                android:id="@+id/txtNotificationsLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Notifications"
-                android:textSize="20dp"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/imgNotifications"
-                android:layout_marginLeft="20dp"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-            <ImageButton
-                android:id="@+id/imgCollapseNotifications"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/txtNotificationsLabel"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_down"
-                android:scaleType="fitCenter"
-                android:background="@null"
-                />
-
+            android:layout_height="wrap_content">
             <LinearLayout
-                android:id="@+id/notificationDisplay"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:background="@drawable/blue_circle"
-                android:orientation="vertical"
-                android:gravity="center">
-                <TextView
-                    android:id="@+id/notificationCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="2"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginLeft="50dp"
-            android:layout_below="@id/RecentTransactions"
-            android:id="@+id/transaction_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginVertical="4dp"
-            android:paddingHorizontal="10dp"
-            android:background="@drawable/white_circle"
-            app:layout_constraintStart_toStartOf="@id/txtEmail"
-            app:layout_constraintTop_toTopOf="parent"
-            android:backgroundTint="@color/cool_grey">
-
-            <ImageView
-                android:id="@+id/imgChangeDetails"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_edit" />
-
-            <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Change Account Details"
-                android:textSize="20dp"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/imgChangeDetails"
-                android:layout_marginLeft="20dp"
-                app:layout_constraintTop_toTopOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:orientation="vertical">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/notificationsWidget"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginVertical="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/white_circle"
+                    app:layout_constraintStart_toStartOf="@id/txtEmail"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:backgroundTint="@color/cool_grey">
+
+                    <ImageView
+                        android:id="@+id/imgNotifications"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_notifications_bell" />
+
+                    <TextView
+                        android:id="@+id/txtNotificationsLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Notifications"
+                        android:textSize="20dp"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/imgNotifications"
+                        android:layout_marginLeft="20dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <ImageButton
+                        android:id="@+id/btnCollapseNotifications"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/txtNotificationsLabel"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        android:scaleType="fitCenter"
+                        android:background="@null"
+                        />
+
+                    <LinearLayout
+                        android:id="@+id/notificationCountDisplay"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:background="@drawable/blue_circle"
+                        android:orientation="vertical"
+                        android:gravity="center">
+                        <TextView
+                            android:id="@+id/notificationCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"/>
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:id="@+id/notificationsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+                    <LinearLayout
+                        android:id="@+id/noNotisDisplay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:paddingVertical="10dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_marginLeft="50dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_approve_outline"/>
+                        <TextView
+                            android:layout_marginLeft="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="All Caught Up. No Unread Notifications!"
+                            android:textSize="16sp"
+                            android:textStyle="italic|bold"
+                            android:alpha="0.8"/>
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/notificationsView"
+                        android:layout_marginLeft="50dp"
+                        android:layout_below="@id/notificationsWidget"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/changeDetailsWidget"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginVertical="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/white_circle"
+                    android:backgroundTint="@color/cool_grey">
+                    <ImageView
+                        android:id="@+id/imgChangeDetails"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_edit" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Change Account Details"
+                        android:textSize="20dp"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/imgChangeDetails"
+                        android:layout_marginLeft="20dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/logOutWidget"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginVertical="4dp"
+                    android:paddingHorizontal="10dp"
+                    android:background="@drawable/white_circle"
+                    android:backgroundTint="@color/cool_grey">
+                    <ImageView
+                        android:id="@+id/imgLogOut"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_logout" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Log Out"
+                        android:textSize="20dp"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@id/imgLogOut"
+                        android:layout_marginLeft="20dp"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </ScrollView>
 
     </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/navigationBar"
-        android:layout_alignParentBottom="true"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="@drawable/white_circle"
-        android:backgroundTint="@color/corporate_blue"
-        android:paddingHorizontal="25dp"
-        android:layout_marginBottom="10dp">
-
-        <ImageButton
-            android:id="@+id/btnDashboard"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_dashboard"
-            android:background="@null"
-            android:foregroundTint="@color/light_blue"
-            android:scaleType="fitCenter"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/btnAccounts"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/btnAccounts"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_accounts"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            app:layout_constraintLeft_toRightOf="@id/btnDashboard"
-            app:layout_constraintRight_toLeftOf="@id/view"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            app:layout_constraintLeft_toRightOf="@id/btnAccounts"
-            app:layout_constraintRight_toLeftOf="@id/btnReport"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/btnReport"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_report"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            app:layout_constraintLeft_toRightOf="@id/view"
-            app:layout_constraintRight_toLeftOf="@id/btnMore"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <ImageButton
-            android:id="@+id/btnMore"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_more"
-            android:background="@null"
-            android:scaleType="fitCenter"
-            app:layout_constraintLeft_toRightOf="@id/btnReport"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <View
-            android:layout_marginTop="3dp"
-            android:layout_width="30dp"
-            android:layout_height="2dp"
-            android:background="@color/white"
-            app:layout_constraintLeft_toLeftOf="@id/btnMore"
-            app:layout_constraintTop_toBottomOf="@id/btnMore"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <ImageButton
-        android:id="@+id/btnTransact"
-        android:padding="4dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/white_circle"
-        android:layout_alignTop="@+id/navigationBar"
-        android:layout_marginTop="-25dp"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_transact"
-        android:scaleType="fitCenter"/>
 
 </RelativeLayout>

@@ -21,68 +21,79 @@ import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.util.Tex
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-public class RegisterActivity extends AppCompatActivity {
+public class AccountDetailsActivity extends AppCompatActivity {
     // Declare Variables
     private DBAdapter dbAdapter;
-    private EditText edtIdNumber, edtUsername, edtEmail, edtPassword;
+    private EditText edtUsername, edtEmail, edtPassword;
     private Button btnRegister;
     private RadioGroup radgrpUserRole;
     private UserRoleEnum customerRole = UserRoleEnum.Customer;
-    private TextView txtBackToLogin;
+    int userId;
+
 
     boolean bEmailValid = false, bRoleValid= false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(R.layout.activity_account_details);
 
         // Get Instance of Database
+        userId = getIntent().getIntExtra("USER_ID", -1);
         dbAdapter = DBAdapter.getInstance(this);
         dbAdapter.open();
 
         // Instantiate component variables
-        edtIdNumber = findViewById(R.id.edtIdNumber);
         edtUsername = findViewById(R.id.edtUserName);
+        edtUsername.setText(dbAdapter.getUserName(userId));
         edtPassword = findViewById(R.id.edtPassword);
+        edtPassword.setText(String.valueOf(userId));
         edtEmail = findViewById(R.id.edtEmail);
+        edtEmail.setText(dbAdapter.getUserEmail(userId));
         radgrpUserRole = findViewById(R.id.radgrpRole);
-        txtBackToLogin = findViewById(R.id.txtBackToLogin);
+        switch (dbAdapter.getUserRole(userId))
+        {
+            case "Customer": radgrpUserRole.check(R.id.radCustomer); break;
+            case "Consultant": radgrpUserRole.check(R.id.radConsultant); break;
+            case "Advisor": radgrpUserRole.check(R.id.radAdvisor); break;
+        }
+        radgrpUserRole.check(R.id.radAdvisor);
         btnRegister = findViewById(R.id.btnRegister);
 
         btnRegister.setOnClickListener(v -> {
             // Initialize variables
-            String strIdNumber;
             String strUsername = edtUsername.getText().toString();
+            edtUsername.setText(strUsername);
             String strEmail = edtEmail.getText().toString();
+            edtEmail.setText(strEmail);
             String strPassword = edtPassword.getText().toString();
             boolean bPasswordValid = isValidPassword(strPassword);
             boolean bUserNameValid = !strUsername.isEmpty();
 
             if (!bEmailValid)
             {
-                Toast.makeText(RegisterActivity.this, "Please enter a valid email address!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Please enter a valid email address!", Toast.LENGTH_SHORT).show();
             } else
             if (!bUserNameValid)
             {
-                Toast.makeText(RegisterActivity.this, "Please enter a username!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Please enter a username!", Toast.LENGTH_SHORT).show();
             } else
             if (!bRoleValid)
             {
-                Toast.makeText(RegisterActivity.this, "Please select a role!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Please select a role!", Toast.LENGTH_SHORT).show();
             } else
             if (!bPasswordValid) {
-                Toast.makeText(RegisterActivity.this, "Please use a password at least 8 letters long with at least one symbol, one number, one capital letter and one small letter!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Please use a password at least 8 letters long with at least one symbol, one number, one capital letter and one small letter!", Toast.LENGTH_SHORT).show();
             } else
-            if (dbAdapter.getUserId(edtEmail.getText().toString()) != -1)
+            if (dbAdapter.getUserId(edtEmail.getText().toString()) == -1)
             {
-                Toast.makeText(RegisterActivity.this, "That email is already taken!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Username already exists!", Toast.LENGTH_SHORT).show();
             } else
              {
-                long userId = dbAdapter.insertUser(strUsername, strEmail, strPassword, "Customer");
-                if (userId == -1)
+                long check = dbAdapter.updateUserDetails(userId,strUsername, strEmail, strPassword, "Customer");
+                if (check == 0)
                 {
-                    Toast.makeText(RegisterActivity.this, "User not registered!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AccountDetailsActivity.this, "User not registered!", Toast.LENGTH_SHORT).show();
                 }
                 else {
 
@@ -95,11 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 LocalDate.now(ZoneId.systemDefault()).toString(),
                                 "RoleChange");
                     }
-
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
                     dbAdapter.close();
+                    finish();
                 }
             }
         });
@@ -116,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
                 bRoleValid = true;
             } else {
                 bRoleValid = false;
-                Toast.makeText(RegisterActivity.this, "Please select a user role!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AccountDetailsActivity.this, "Please select a user role!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -155,14 +163,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
             return false;
-        });
-
-        txtBackToLogin.setOnClickListener(v -> {
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-            dbAdapter.close();
-
         });
     }
 

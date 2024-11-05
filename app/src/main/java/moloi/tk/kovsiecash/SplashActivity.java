@@ -14,18 +14,27 @@ public class SplashActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        dbAdapter = DBAdapter.getInstance(this);
+        dbAdapter.open();
+
         new Handler().postDelayed(() -> {
-            dbAdapter = DBAdapter.getInstance(this);
-            dbAdapter.open();
             try {
                 dbAdapter.populateDatabase();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
+
             startActivity(new Intent("moloi.tk.kovsiecash.LoginActivity"));
             finish();
         }, 2000);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        dbAdapter.close();
+        super.onDestroy();
 
     }
 }
